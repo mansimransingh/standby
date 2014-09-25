@@ -14,6 +14,12 @@ $ ->
     curr = 0
     stillInLoading = true
     old_pct = 0
+    $('#percentage').text('Loading...')
+    if total == 0
+      NProgress.done()
+      $('#percentage').text('Loaded!')
+      stillInLoading = false
+      postLoading()
     $('.cache:not(.loaded)').each (i, el) ->
       $el = $(el)
       $.get '/cache', {url: el.href}, (html) ->
@@ -36,9 +42,12 @@ $ ->
                 setTimeout(() ->
                   $('.last-line').addClass('done')
                   NProgress.done()
+                  postLoading()
                 , 2000)
               else
-                NProgress.set(curr / total)
+                NProgress.set(curr/total)
+                console.log(pct)
+                $('#percentage').text(pct+'%')
             el.addClass('loaded')
           $el.on 'click', (e) ->
             e.preventDefault()
@@ -46,6 +55,10 @@ $ ->
             id = $(@).data('id')
             $("#arrow-#{id}").addClass('arrow-seen')
             window.location.hash = id
+  
+  postLoading = ->
+    $('wrapper').hide()
+    $('#icons-section').show()
 
   openLink = (id) ->
     $("##{id}").addClass('fucklightboxes')

@@ -3,7 +3,7 @@
   var __slice = [].slice;
 
   $(function() {
-    var addToStandBy, cacheLinks, hideLink, openLink, waitForLoaded;
+    var addToStandBy, cacheLinks, hideLink, openLink, postLoading, waitForLoaded;
     document.write = function() {
       var p;
       p = 1 <= arguments.length ? __slice.call(arguments, 0) : [];
@@ -25,6 +25,13 @@
       curr = 0;
       stillInLoading = true;
       old_pct = 0;
+      $('#percentage').text('Loading...');
+      if (total === 0) {
+        NProgress.done();
+        $('#percentage').text('Loaded!');
+        stillInLoading = false;
+        postLoading();
+      }
       return $('.cache:not(.loaded)').each(function(i, el) {
         var $el;
         $el = $(el);
@@ -51,10 +58,13 @@
                   stillInLoading = false;
                   setTimeout(function() {
                     $('.last-line').addClass('done');
-                    return NProgress.done();
+                    NProgress.done();
+                    return postLoading();
                   }, 2000);
                 } else {
                   NProgress.set(curr / total);
+                  console.log(pct);
+                  $('#percentage').text(pct + '%');
                 }
               }
               return el.addClass('loaded');
@@ -69,6 +79,10 @@
           }
         });
       });
+    };
+    postLoading = function() {
+      $('wrapper').hide();
+      return $('#icons-section').show();
     };
     openLink = function(id) {
       $("#" + id).addClass('fucklightboxes');
